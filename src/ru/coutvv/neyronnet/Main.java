@@ -1,54 +1,50 @@
 package ru.coutvv.neyronnet;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
+import ru.coutvv.neyronnet.network.NeyronNetwork;
 
+/**
+ * Точка входа
+ * 
+ * @author lomovtsevrs
+ */
 public class Main {
 
-	private static int MAX_COLOR = 255;
-	private static int MIN_COLOR = 0;
-	
 	public static void main(String[] args) throws IOException {
-//		BufferedImage img = ImageIO.read(new File("file"));
-//		img.getGraphics().
-		File f = new File("res/wft.png");
-		System.out.println(f.exists());
+		ImageController ctrl = ImageController.getInstance();
+		NeyronNetwork network = new NeyronNetwork();
 		
-		BufferedImage img = ImageIO.read(f);
-		System.out.println(img.getHeight());
-		System.out.println(img.getRGB(3, 4)); 
-		for(int i = 0; i< img.getWidth(); i++) {
-			for(int j = 0;j <img.getHeight(); j++) {
-				Color c = new Color(img.getRGB(i, j));
-				System.out.println(c.getBlue());
-			}
+		//experiment A
+		int[][] aData = ctrl.getDataFromImage("res/это_а.png");
+		int[][] bData = ctrl.getDataFromImage("res/это_б.png");
+		int[][] vData = ctrl.getDataFromImage("res/это_в.png");
+
+		int change = 0;
+		for(int i = 0; i < 1000; i++) {
+			change = itIs(aData, "А", network) ? change+1 : change;
+			change = itIs(bData, "Б", network) ? change+1 : change;
+			change = itIs(vData, "В", network) ? change+1 : change;
 		}
+		System.out.println("Процент угадываний: " + change/30);
 		
-		Graphics gr = img.getGraphics();
-		gr.setColor(new Color(0, 0, 200));
-		for(int i = 0; i< img.getWidth(); i++) {
-			for(int j = 0;j <img.getHeight(); j++) {
-				int r = new Random().nextInt((MAX_COLOR - MIN_COLOR) + 1) + MIN_COLOR,
-					g = new Random().nextInt((MAX_COLOR - MIN_COLOR) + 1) + MIN_COLOR,
-					b = new Random().nextInt((MAX_COLOR - MIN_COLOR) + 1) + MIN_COLOR;
-				gr.setColor(new Color(r,g,b));
-				gr.drawRect(i, j, 1, 1);
-			}
-		}
+		//experiment B
+		int success = 0;
+		int[][] data = ctrl.getDataFromImage("res/a/a1.png");
+		success = itIs(data, "А", network) ? success + 1 : success;
+		data = ctrl.getDataFromImage("res/a/a2.png");
+		success = itIs(data, "А", network) ? success + 1 : success;
+		data = ctrl.getDataFromImage("res/a/a3.png");
+		success = itIs(data, "А", network)? success + 1 : success;
 		
-		File out = new File("res/wft_out.png");
-		ImageIO.write(img, "png", out);
+		success = itIs(bData, "Б", network)? success + 1 : success;
+		
+		System.out.println("Угадал: " + success + " раз из 4ёх");
+		
+		
 	}
 
-	
-	public void test() {
-		Neyron n = new Neyron("shit", new int[10][10]);
-
+	public static boolean itIs(int[][] data, String answer, NeyronNetwork network) throws IOException {
+		return answer.equals(network.letIdentify(data, answer));
 	}
 }
