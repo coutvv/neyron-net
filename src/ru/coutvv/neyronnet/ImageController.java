@@ -39,6 +39,8 @@ public class ImageController {
 		}
 		//сохранение
 		File file = new File(name);
+		if(!file.getParentFile().exists())
+			file.getParentFile().mkdirs();
 		ImageIO.write(img, "png", file);
 	}
 	
