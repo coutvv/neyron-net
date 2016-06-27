@@ -40,8 +40,6 @@ public class Main {
 		success = itIs(bData, "Б", network)? success + 1 : success;
 		
 		System.out.println("Угадал: " + success + " раз из 4ёх");
-		
-		
 	}
 
 	public static boolean itIs(int[][] data, String answer, NeyronNetwork network) throws IOException {
